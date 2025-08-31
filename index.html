@@ -9,13 +9,59 @@
         font-family: system-ui, sans-serif;
         margin: 2rem;
       }
+      label {
+        display: block;
+        margin: 0.5rem 0 0.25rem;
+      }
+      input[type="number"],
+      input[type="text"] {
+        width: 8rem;
+      }
+      .row {
+        display: flex;
+        gap: 1rem;
+        align-items: end;
+        flex-wrap: wrap;
+      }
+      .out {
+        margin-top: 1rem;
+        white-space: pre-wrap;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 0.5rem;
+      }
     </style>
   </head>
   <body>
     <h1>wGen</h1>
-    <p>TypeScript → JS minimal scaffold. We’ll add UI next.</p>
 
-    <!-- Load the compiled JS -->
+    <div class="row">
+      <div>
+        <label>Phoneme length</label>
+        <input id="len" type="number" min="2" max="12" value="5" />
+      </div>
+      <div>
+        <label>Count</label>
+        <input id="count" type="number" min="1" max="100" value="10" />
+      </div>
+      <div>
+        <label>Seed (optional)</label>
+        <input id="seed" type="text" placeholder="e.g. 42" />
+      </div>
+      <div>
+        <label>Start</label>
+        <select id="start">
+          <option value="random" selected>random</option>
+          <option value="consonant">consonant</option>
+          <option value="vowel">vowel</option>
+        </select>
+      </div>
+      <button id="gen">Generate</button>
+      <button id="copy">Copy</button>
+    </div>
+
+    <div class="out" id="out"></div>
+
     <script type="module" src="./dist/main.js"></script>
   </body>
 </html>

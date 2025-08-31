@@ -4,14 +4,12 @@
   "version": "0.0.1",
   "scripts": {
     "build": "tsc",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "serve": "npx serve -l 5173 .",
+    "dev": "concurrently -k -n TSC,SRV -c yellow,cyan \"npm:watch\" \"npm:serve\""
   },
   "devDependencies": {
-    "typescript": "^5.9.2"
-  },
-  "main": "index.js",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": ""
+    "concurrently": "^9.2.1",
+    "typescript": "^5.5.4"
+  }
 }
