@@ -1,0 +1,17 @@
+{
+  "name": "wgen",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  },
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
