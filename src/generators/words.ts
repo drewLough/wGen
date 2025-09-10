@@ -1,5 +1,5 @@
 import { CONSONANTS, VOWELS } from "../data/en.js";
-import { createRNG, randInt } from "./rng.js";
+import { createRNG, randInt, randomSeed } from "./rng.js";
 
 type State = { prevWasVowel: boolean };
 
@@ -48,9 +48,68 @@ export function generateWord(opts: WordOpts = {}): string {
 
 export function generateWords(count: number, opts: WordOpts = {}): string[] {
   const out: string[] = [];
-  for (let i = 0; i < count; i++) {
-    // Offset seed per word so reps vary but remain reproducible
-    out.push(generateWord({ ...opts, seed: `${opts.seed ?? 42}:${i}` }));
+
+  if (opts.seed === undefined) {
+    // No seed given: new random seed for this run (so each click differs)
+    const base = randomSeed();
+    for (let i = 0; i < count; i++) {
+      out.push(generateWord({ ...opts, seed: `${base}:${i}` }));
+    }
+  } else {
+    // Deterministic: same seed + index offset
+    for (let i = 0; i < count; i++) {
+      out.push(generateWord({ ...opts, seed: `${opts.seed}:${i}` }));
+    }
   }
   return out;
+}
+
+// --- Template support: C = consonant, V = vowel, N = digit 0-9, (...) optional group ---
+
+function expandTemplate(template: string, rng: () => number): string {
+  // Recursively process parentheses with 50% inclusion
+  let i = 0;
+
+  function parse(): string {
+    let out = "";
+    while (i < template.length) {
+      const ch = template[i++];
+
+      if (ch === "(") {
+        const inner = parse(); // parse until matching ')'
+        // 50% chance to include the inner group
+        if (rng() < 0.5) out += inner;
+      } else if (ch === ")") {
+        break; // end of this group
+      } else if (/[CVN]/.test(ch)) {
+        out += ch;
+      } else {
+        // treat any other literal as-is so users can write separators like '-' or '_'
+        out += ch;
+      }
+    }
+    return out;
+  }
+
+  return parse();
+}
+
+function emitFromTokens(tokens: string, rng: () => number): string {
+  let word = "";
+  for (const t of tokens) {
+    if (t === "C") word += randomConsonant(rng);
+    else if (t === "V") word += randomVowel(rng);
+    else if (t === "N") word += String(randInt(rng, 0, 9));
+    else word += t; // any literal
+  }
+  return word;
+}
+
+export function generateWordFromTemplate(
+  template: string,
+  opts: WordOpts = {}
+): string {
+  const rng = createRNG(opts.seed ?? 42);
+  const tokens = expandTemplate(template, rng); // e.g., "CVCN-" etc.
+  return emitFromTokens(tokens, rng);
 }

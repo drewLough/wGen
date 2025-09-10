@@ -23,3 +23,12 @@ export function randInt(rng: () => number, min: number, max: number): number {
   const hi = Math.floor(max);
   return Math.floor(rng() * (hi - lo + 1)) + lo;
 }
+
+export function randomSeed(): number {
+  if (typeof crypto !== "undefined" && "getRandomValues" in crypto) {
+    const buf = new Uint32Array(1);
+    crypto.getRandomValues(buf);
+    return buf[0] || Date.now(); // fallback if zero by chance
+  }
+  return Date.now(); // Node/older browsers fallback
+}
